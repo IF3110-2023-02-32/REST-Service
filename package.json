@@ -4,7 +4,10 @@
   "description": "REST service for app",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "npm run build && node dist/index.js",
+    "docker": "CHOKIDAR_USEPOLLING=true index.ts"
   },
   "repository": {
     "type": "git",
@@ -19,6 +22,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.9.0",
+    "prisma": "^5.5.2",
     "typescript": "^5.2.2"
   }
 }

@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  rest-service:
+    image: rest-service
+    container_name: rest-service
+    ports:
+      - "3030:3030"
+    depends_on:
+      - rest-db
+    env_file:
+      - .env
+
+  rest-db:
+    image: postgres:16-alpine
+    container_name: rest-postgres
+    ports:
+      - "5433:${POSTGRES_PORT}"
+    env_file:
+      - .env
+    # volumes:
+    #   - ./database/database-seed:/docker-entrypoint-initdb.d/database-seed.sql
