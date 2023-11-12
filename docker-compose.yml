@@ -9,6 +9,9 @@ services:
       - rest-db
     env_file:
       - .env
+    volumes:
+      - ./index.ts:/app/index.ts
+      - ./src:/app/src
 
   rest-db:
     image: postgres:16-alpine
