@@ -12,6 +12,7 @@ services:
     volumes:
       - ./index.ts:/app/index.ts
       - ./src:/app/src
+      - ./prisma:/app/prisma
 
   rest-db:
     image: postgres:16-alpine

@@ -7,5 +7,33 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("REST_DATABASE_URL")
+}
+
+model User {
+  user_id      Int            @id @default(autoincrement())
+  username     String         @unique
+  password     String
+  role         String
+  UserAnalytic UserAnalytic[]
+  PostAnalytic PostAnalytic[]
+}
+
+model UserAnalytic {
+  user_id  Int      @id
+  user     User     @relation(fields: [user_id], references: [user_id])
+  follower Int
+  date     DateTime
+}
+
+model PostAnalytic {
+  post_id  Int
+  owner_id Int
+  owner    User     @relation(fields: [owner_id], references: [user_id])
+  views    Int
+  likes    Int
+  replies  Int
+  date     DateTime
+
+  @@id([post_id, owner_id])
 }
