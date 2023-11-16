@@ -123,12 +123,6 @@ app.post('/register', async (req: Request, res: Response) => {
     res.json({message: "error"});
   }
 });
-
-app.get('/test', async (req: Request, res: Response) => {
-  updateAnalytics('johann');
-  res.json('done');
-})
-
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
