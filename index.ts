@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
+import { updateAnalytics } from './src/datafetch/updateData'
+
 interface userData {
   user_id : number,
   username : string,
@@ -156,6 +158,9 @@ app.post('/register', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/refreshdata/:username', async (req: Request, res: Response) => {
+  await updateAnalytics(req.params.username);
+})
 
 
 app.listen(port, () => {
