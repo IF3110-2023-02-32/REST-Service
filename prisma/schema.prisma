@@ -23,7 +23,7 @@ model UserAnalytic {
   user_id  Int
   user     User     @relation(fields: [user_id], references: [user_id])
   follower Int
-  date     DateTime
+  date     DateTime @db.Date
 
   @@id([user_id, date])
 }
@@ -35,7 +35,7 @@ model PostAnalytic {
   views    Int
   likes    Int
   replies  Int
-  date     DateTime
+  date     DateTime @db.Date
 
   @@id([post_id, owner_id, date])
 }
