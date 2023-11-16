@@ -80,6 +80,47 @@ app.get('/post/view/:owner/:id', async (req: Request, res: Response) => {
   res.json(data);
 });
 
+app.post('/login', async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  let test = true
+  if(test){
+    const data : any[] = await prisma.$queryRaw`SELECT * FROM "User" WHERE username = ${username};`
+    if(data.length == 0){
+      res.json({message: "error"});
+    }
+    else{
+      const bycript = require('bcryptjs');
+      const match = await bycript.compare(password, data[0].password);
+      if(match){
+        res.json(data[0]);
+      }
+      else{
+        res.json({message: "error"});
+      }
+    }
+  }
+  else{
+    res.json({message: "error"});
+  }
+});
+app.post('/register', async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  let test = true
+  if(test){
+    try{
+    const bycript = require('bcryptjs');
+    const numSaltRounds = 8;
+    const passwordhash = bycript.hashSync(password, numSaltRounds)
+    const data = await prisma.$queryRaw`INSERT INTO "User" (username, password,role) VALUES (${username}, ${passwordhash},'user');`
+    res.json({message: "success"});
+    }catch(e){
+      res.json({message: "error"});
+    }
+  }
+  else{
+    res.json({message: "error"});
+  }
+});
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
