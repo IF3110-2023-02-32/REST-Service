@@ -13,7 +13,9 @@ const app: Express = express();
 const port = process.env.REST_PORT;
 const prisma = new PrismaClient();
 
-
+(BigInt.prototype as any).toJSON = function () {
+  return Number(this)
+  };
 app.use(cors())
 app.use(bodyParser.json());
 
@@ -28,10 +30,10 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Serve');
 });
 
-app.get('/follows/:id', (req: Request, res: Response) => {
-    let query = `SELECT to_char(date,'Dy') as day, SUM(follower) as total FROM "UserAnalytic" WHERE user_id = ${req.params.id} GROUP BY date,day ORDER BY date; `;
-    const data = prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(follower) as total FROM "UserAnalytic" WHERE user_id = ${req.params.id} GROUP BY date,day ORDER BY date; `;
-    res.send(data);
+app.get('/follow/:id', async (req: Request, res: Response) => {
+    let integer = Number(req.params.id);
+    const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(follower) as total FROM "UserAnalytic" WHERE user_id = ${integer} GROUP BY date,day ORDER BY date DESC LIMIT 7; `;
+    res.json(data);
 });
 app.get('/post/:owner', async (req: Request, res: Response) => {
   let integer = parseInt(req.params.owner);
@@ -40,32 +42,42 @@ app.get('/post/:owner', async (req: Request, res: Response) => {
 });
 app.get('/post/like/:owner', async (req: Request, res: Response) => {
   let integer = parseInt(req.params.owner);
-  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(likes) as total, date FROM "PostAnalytic" WHERE owner_id = ${integer} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
+  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(likes) as total FROM "PostAnalytic" WHERE owner_id = ${integer} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
   res.json(data);
 });
-app.get('/post/reply/:owner', (req: Request, res: Response) => {
-  let query = "SELECT to_char(date,'Dy') as day, SUM(reply) as total FROM PostAnalytic WHERE owner_id = " + req.params.owner + " GROUP BY date,day ORDER BY date;";
-  res.send(query);
+app.get('/post/reply/:owner', async (req: Request, res: Response) => {
+  let integer = parseInt(req.params.owner);
+  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(replies) as total FROM "PostAnalytic" WHERE owner_id = ${integer} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
+  res.json(data);
 });
-app.get('/post/view/:owner', (req: Request, res: Response) => {
-  let query = "SELECT to_char(date,'Dy') as day, SUM(view) as total FROM PostAnalytic WHERE owner_id = " + req.params.owner + " GROUP BY date,day ORDER BY date;";
-  res.send(query);
+app.get('/post/view/:owner', async (req: Request, res: Response) => {
+  let integer = parseInt(req.params.owner);
+  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(views) as total FROM "PostAnalytic" WHERE owner_id = ${integer} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
+  res.json(data);
 });
-app.get('/post/:owner/:id', (req: Request, res: Response) => {
-  let query = "SELECT DISTINCT post_id from PostAnalytic WHERE user_id = " + req.params.owner + " AND post_id = " + req.params.id + ";"
-  res.send(query);
+app.get('/post/:owner/:id', async (req: Request, res: Response) => {
+  let integer = parseInt(req.params.owner);
+  let idpost = parseInt(req.params.id);
+  const data = await prisma.$queryRaw`SELECT DISTINCT post_id from "PostAnalytic" WHERE owner_id = ${integer} AND post_id= ${idpost} ORDER BY post_id;`
+  res.json(data);
 });
-app.get('/post/like/:owner/:id', (req: Request, res: Response) => {
-  let query = "SELECT to_char(date,'Dy') as day, SUM(like) as total FROM PostAnalytic WHERE owner_id = " + req.params.owner + " AND post_id = " + req.params.id + " GROUP BY date,day ORDER BY date;";
-  res.send(query);
+app.get('/post/like/:owner/:id', async (req: Request, res: Response) => {
+  let integer = parseInt(req.params.owner);
+  let idpost = parseInt(req.params.id);
+  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(likes) as total FROM "PostAnalytic" WHERE owner_id = ${integer} AND post_id = ${idpost} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
+  res.json(data);
 });
-app.get('/post/reply/:owner/:id', (req: Request, res: Response) => {
-  let query = "SELECT to_char(date,'Dy') as day, SUM(reply) as total FROM PostAnalytic WHERE owner_id = " + req.params.owner + " AND post_id = " + req.params.id + " GROUP BY date,day ORDER BY date;";
-  res.send(query);
+app.get('/post/reply/:owner/:id', async(req: Request, res: Response) => {
+  let integer = parseInt(req.params.owner);
+  let idpost = parseInt(req.params.id);
+  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(replies) as total FROM "PostAnalytic" WHERE owner_id = ${integer} AND post_id=${idpost} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
+  res.json(data);
 });
-app.get('/post/view/:owner/:id', (req: Request, res: Response) => {
-  let query = "SELECT to_char(date,'Dy') as day, SUM(view) as total FROM PostAnalytic WHERE owner_id = " + req.params.owner + " AND post_id = " + req.params.id + " GROUP BY date,day ORDER BY date;";
-  res.send(query);
+app.get('/post/view/:owner/:id', async (req: Request, res: Response) => {
+  let integer = parseInt(req.params.owner);
+  let idpost = parseInt(req.params.id);
+  const data = await prisma.$queryRaw`SELECT to_char(date,'Dy') as day, SUM(views) as total FROM "PostAnalytic" WHERE owner_id = ${integer} AND post_id=${idpost} GROUP BY date,day ORDER BY date DESC LIMIT 7;`
+  res.json(data);
 });
 
 app.listen(port, () => {
