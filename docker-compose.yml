@@ -13,6 +13,8 @@ services:
       - ./index.ts:/app/index.ts
       - ./src:/app/src
       - ./prisma:/app/prisma
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
 
   rest-db:
     image: postgres:16-alpine
