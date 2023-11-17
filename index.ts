@@ -5,6 +5,7 @@ import { PrismaClient} from "@prisma/client";
 import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import axios from 'axios';
 
 import { updateAnalytics } from './src/datafetch/updateData'
 
@@ -128,6 +129,8 @@ app.post('/login', async (req: Request, res: Response) => {
           username: datavalid.username,
           role: datavalid.role
         }
+
+
         res.json(senddata);
       }
       else{
@@ -139,9 +142,37 @@ app.post('/login', async (req: Request, res: Response) => {
     res.json({message: "error"});
   }
 });
+
+// type Header = {
+//   [key:string]:string | undefined
+// }
+
 app.post('/register', async (req: Request, res: Response) => {
   const { username, password } = req.body;
   let test = true
+  //Ngga bisa konek ke soap :(
+    
+//   const xmlreq = `
+//   <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+//     <Body>
+//         <getUnlockingByLinkCode xmlns="http://ws/">
+//             <link_code xmlns="">${username}</link_code>
+//         </getUnlockingByLinkCode>
+//     </Body>
+// </Envelope>
+// `;
+
+//   const headers : Header = {
+//     'Content-Type': 'text/xml;charset=UTF-8',
+//     SOAPAction: '#POST',
+//     'api-key' : process.env.REST_SOAP_API_TOKEN
+//   }
+//   await axios.post('http://host.docker.internal:3003/ws/unlocking?wsdl', xmlreq, {headers: headers}).then((response) => {
+//     res.send(response.data);
+//   }).catch((error) => {
+//     console.log()
+//     res.send(error);
+//   });
   if(test){
     try{
     const bycript = require('bcryptjs');
